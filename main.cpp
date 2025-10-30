@@ -8,7 +8,7 @@ int main() {
 
     for (int i = 1; i <= 5; i++) {
         // TIP 按 <shortcut actionId="Debug"/> 开始调试代码。我们已为您设置了一个 <icon src="AllIcons.Debugger.Db_set_breakpoint"/> 断点，但您可以随时按 <shortcut actionId="ToggleLineBreakpoint"/> 添加更多断点。
-        std::cout << "i = " << i+3 << std::endl;
+        std::cout << "i = " << i+5 << std::endl;
     }
 
     return 0;
