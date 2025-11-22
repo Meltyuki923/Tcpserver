@@ -7,4 +7,6 @@ add_executable(Tcpserver main.cpp
         lock/lockers.h
         threadpool/threadpool.cpp
         threadpool/threadpool.hpp
+        http_conn/httpconn.cpp
+        http_conn/httpconn.hpp
 )
