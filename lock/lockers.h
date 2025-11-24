@@ -48,6 +48,12 @@ public:
     bool unlock(){
         pthread_mutex_unlock(&m_mutex);
     }
+
+//可以让多个外部成员函数拿到同一个锁
+    pthread_mutex_t* get(){
+        return &m_mutex;
+    }
+
 private:
     pthread_mutex_t m_mutex;
 };
@@ -72,6 +78,17 @@ public:
         ret = pthread_cond_timedwait(&m_cond,m_mutex,&t);
         return ret==0;
     }
+
+    bool signal()
+    {
+        return pthread_cond_signal(&m_cond) == 0;
+    }
+
+    bool broadcast()
+    {
+        return pthread_cond_broadcast(&m_cond) == 0;
+    }
+
 private:
     pthread_cond_t m_cond;
 };
