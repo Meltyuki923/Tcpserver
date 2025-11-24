@@ -11,4 +11,6 @@ add_executable(Tcpserver main.cpp
         http_conn/httpconn.hpp
         timer/lst_timer.cpp
         timer/lst_timer.hpp
+        log/block_queue.cpp
+        log/block_queue.hpp
 )
