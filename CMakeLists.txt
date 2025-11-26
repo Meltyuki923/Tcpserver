@@ -15,4 +15,6 @@ add_executable(Tcpserver main.cpp
         log/block_queue.hpp
         log/log.cpp
         log/log.hpp
+        cgi_mysql/sql_connection_pool.cpp
+        cgi_mysql/sql_connection_pool.hpp
 )
