@@ -26,6 +26,11 @@
 #include <map>
 #include <string>
 
+#include "../lock/lockers.h"
+#include "../cgi_mysql/sql_connection_pool.hpp"
+#include "../timer/lst_timer.hpp"
+#include "../log/log.hpp"
+
 
 class httpconn {
 public:
@@ -43,19 +48,31 @@ public:
     //行的读取状态
     enum LINE_STATUS {LINE_OK = 0,LINE_BAD,LINE_OPEN };
 public:
-    httpconn();
-    ~httpconn();
+    httpconn() {};
+    ~httpconn() {};
+
 public:
     //初始化新连接
-    void init(int sockfd,const sockaddr_in& addr);
+    void init(int sockfd,const sockaddr_in& addr, char *root, int TRIGMode,
+              int close_log, std::string user, std::string passwd, std::string sqlname);
     //关闭连接
     void close_conn(bool real_close = true);
     //处理客户请求
     void process();
     //非阻塞读操作
-    bool read();
+    bool read_once();
     //非阻塞写操作
     bool write();
+
+    sockaddr_in *get_address()
+    {
+        return &m_address;
+    }
+    //本质是将数据库的内容存入到服务器上
+    void initmysql_result(sql_connection_pool *connPool);
+    int timer_flag;
+    int improv;
+
 private:
     //初始化连接
     void init();
@@ -89,6 +106,9 @@ public:
     static int m_epollfd;
     //统计用户数量
     static int m_user_count;
+    //数据库
+    MYSQL* mysql;
+    int m_state; //读为0，写为1
 private:
     //该http连接的socket和对方的socket地址
     int m_sockfd;
@@ -132,10 +152,23 @@ private:
     //我们将采用writev来执行写操作，所以定义下面两个成员，其中m_iv_count表示被写内存块的数量
     struct iovec m_iv[2];
     int m_iv_count;
+    //是否启用Post
+    int cgi;
+    //存储请求头数据(contnet)
+    char* m_string;
     //剩余的要发送的字节数
     int bytes_to_send;
     //已经发送的字节数
     int bytes_have_send;
+    char *doc_root;
+
+    std::map<std::string, std::string> m_users;
+    int m_TRIGMode;
+    int m_close_log;
+
+    char sql_user[100];
+    char sql_passwd[100];
+    char sql_name[100];
 };
 
 

@@ -43,10 +43,10 @@ public:
         pthread_mutex_destroy(&m_mutex);
     }
     bool lock(){
-        pthread_mutex_lock(&m_mutex);
+       return pthread_mutex_lock(&m_mutex)==0;
     }
     bool unlock(){
-        pthread_mutex_unlock(&m_mutex);
+       return  pthread_mutex_unlock(&m_mutex)==0;
     }
 
 //可以让多个外部成员函数拿到同一个锁

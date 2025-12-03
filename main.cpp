@@ -1,16 +1,31 @@
-#include <iostream>
+#include "config.hpp"
 
-// TIP 要<b>Run</b>代码，请按 <shortcut actionId="Run"/> 或点击装订区域中的 <icon src="AllIcons.Actions.Execute"/> 图标。
-int main() {
-    // TIP 当文本光标位于 <b>lang</b> 变量名称处时，按 <shortcut actionId="RenameElement"/> 可以查看 CLion 如何帮助您重命名该变量。
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+int main(int argc, char*argv[]){
+    //数据库信息
+    std::string user = "root";
+    std::string passwd = "root";
+    std::string databasename = "meltdb";
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP 按 <shortcut actionId="Debug"/> 开始调试代码。我们已为您设置了一个 <icon src="AllIcons.Debugger.Db_set_breakpoint"/> 断点，但您可以随时按 <shortcut actionId="ToggleLineBreakpoint"/> 添加更多断点。
-        std::cout << "i = " << i+5 << std::endl;
-    }
+    //解析命令行参数
+    config conf;
+    conf.parse_arg(argc,argv);
+
+    webserver server;
+    server.init(conf.PORT,user,passwd,databasename,conf.LOGWrite,
+                conf.OPT_LINGER,conf.TRIGMode,conf.sql_num,conf.thread_num,conf.close_log,conf.actor_model);
+
+    //启动触发模式
+    server.trig_mode();
+    //启动日志写
+    server.log_write();
+    //启动数据库连接池
+    server.sql_pool();
+    //启动线程池
+    server.thread_pool();
+    //启动监听
+    server.eventListen();
+    //启动事件循环
+    server.eventLoop();
 
     return 0;
-    // TIP 请访问 <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a> 查看 CLion 帮助。此外，您还可以从主菜单中选择“帮助 | 学习 IDE 功能”，尝试 CLion 的交互式课次。
 }

@@ -108,7 +108,7 @@ public:
     int m_TIMESLOT;
 };
 
-
+void cb_func(client_data *user_data);
 
 
 #endif //TCPSERVER_LST_TIMER_HPP

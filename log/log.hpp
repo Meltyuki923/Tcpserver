@@ -21,7 +21,8 @@ public:
     }
     //线程的入口函数用来。启动独立线程执行异步日志写入
     static void* flush_log_thread(void* args){
-        log::get_instance()->async_write_log();;
+        log::get_instance()->async_write_log();
+        return NULL;
     }
     //可选择的参数有日志文件、日志缓冲区大小、最大行数以及最长日志条队列
     bool init(const char *file_name, int close_log, int log_buf_size = 8192, int split_lines = 5000000, int max_queue_size = 0);
@@ -42,6 +43,7 @@ private:
             fputs(signle_log.c_str(),m_fp);
             m_mutex.unlock();
         }
+        return nullptr;
     }
 
 private:

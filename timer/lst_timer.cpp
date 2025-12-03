@@ -60,8 +60,6 @@ void sort_timer_lst::adjust_timer(util_timer *timer) {
     if(timer == head){
         head = head->next;
         head->prev = nullptr;
-        timer->next = nullptr;
-        timer->prev = nullptr;
         //重新插入
         add_timer(timer,head);
     }
@@ -95,9 +93,9 @@ void sort_timer_lst::del_timer(util_timer *timer) {
     }
 
     if(timer == tail){
-        timer->prev = nullptr;
+        tail = tail->prev;
+        tail->next = NULL;
         delete timer;
-        timer = nullptr;
         return;
     }
     //在中间
@@ -191,6 +189,7 @@ void Utils::sig_handler(int sig) {
     //errno 是Linux的全局错误码变量，此处保留原错误码，使函数可重入
     int save_errno = errno;
     int msg = sig;
+    //向写端（u_pipefd[1]）发送信号
     send(u_pipefd[1],(char*)&msg,1,0);
     errno = save_errno;
 }
