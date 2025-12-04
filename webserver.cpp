@@ -143,7 +143,7 @@ void webserver::eventListen() {
     utils.addfd(m_epollfd,m_listenfd, false,m_LISTENTrigmode);
     //将创建的 epoll 实例文件描述符 m_epollfd 赋值给 httpconn 类的静态成员变量 m_epollfd。
     //方便后续在处理客户端连接时，直接通过该静态成员向 epoll 中添加 / 修改 / 删除客户端套接字的事件（无需每次传递 epollfd）
-    httpconn::m_epollfd = m_epollfd;
+    httpconn::m_epollfd =m_epollfd;
 
     //创建一对相互连接的 UNIX 域套接字
     ret = socketpair(PF_UNIX,SOCK_STREAM,0,m_pipefd);
@@ -365,7 +365,7 @@ void webserver::eventLoop() {
         }
         for(int i = 0;i < num;i++){
             int sockfd = events[i].data.fd;
-            // 分支1：处理新客户端连接（监听套接字事件）
+            // 分支1：处理新客户端连接（accpet连接）
             if(sockfd == m_listenfd){
                 bool flag = dealclientdata();
                 if(!flag){
@@ -378,7 +378,7 @@ void webserver::eventLoop() {
                 util_timer *timer = users_timer[sockfd].timer;
                 deal_timer(timer, sockfd);
             }
-            // 分支3：处理信号通知事件（管道读端事件
+            // 分支3：处理定时器信号通知事件（管道读端事件）
             else if((sockfd == m_pipefd[0]) && (events[i].events & EPOLLIN)){
                 bool flag = dealwithsignal(timeout,stop_server);
                 if(!flag){

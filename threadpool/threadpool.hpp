@@ -30,14 +30,13 @@ private:
     mutex m_queuelocker; //请求队列的互斥锁
     sem m_queuestat; //请求队列的信号量，Wait：相当于线程拿一个任务。 Post：相当于新添加一个任务。
     sql_connection_pool* m_connpool; //数据库连接池
-    int m_actor_model; //模型切换
-    bool m_stop;
+    int m_actor_model; //模型切换(Proactor/Reactor)
 };
 
 
 template<typename T>
 threadpool<T>::threadpool(int act_model, sql_connection_pool* connpool,int thread_number, int max_requests) :
-        m_actor_model(act_model),m_thread_number(thread_number),m_max_request(max_requests),m_stop(false),m_threads(nullptr),m_connpool(connpool){
+        m_actor_model(act_model),m_thread_number(thread_number),m_max_request(max_requests),m_threads(nullptr),m_connpool(connpool){
     if(thread_number<=0 || max_requests<=0){
         throw std::exception();
     }
@@ -68,7 +67,6 @@ threadpool<T>::threadpool(int act_model, sql_connection_pool* connpool,int threa
 
 template<typename T>
 threadpool<T>::~threadpool() {
-    m_stop = true;
     delete [] m_threads;
 }
 
@@ -117,7 +115,7 @@ void *threadpool<T>::worker(void *arg) {
 
 template<typename T>
 void threadpool<T>::run() {
-    while(!m_stop){
+    while(true){
         //当请求队列为空时，wait()会让该线程阻塞。直到通过append中的post唤醒线程,才会开始工作
         m_queuestat.wait();
         m_queuelocker.lock();
@@ -160,7 +158,7 @@ void threadpool<T>::run() {
                 }
             }
         }
-            //Proactor逻辑：程序只负责执行逻辑
+            //Proactor逻辑：程序只负责执行逻辑，读写交给主线程（eventLoop()）
         else{
             connectionRAII mysqlcon(&request->mysql, m_connpool);
             request->process();

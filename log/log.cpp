@@ -25,7 +25,7 @@ bool log::init(const char *file_name, int close_log, int log_buf_size, int split
     if(max_queue_size >= 1){
         m_is_async = true;
         m_log_queue = new block_queue<std::string>(max_queue_size);
-        //创建线程
+        //创建写线程
         pthread_t tid;
         //flush_log_thread为回调函数,这里表示创建线程异步写日志
         pthread_create(&tid,NULL,flush_log_thread,NULL);

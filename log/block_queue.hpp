@@ -138,7 +138,7 @@ bool block_queue<T>::push(const T &item) {
     m_mutex.lock();
     if(m_size>=m_max_size){
         m_mutex.unlock();
-        //有菜,开吃
+        //满足条件,开吃
         m_cond.broadcast();
         return false;
     }

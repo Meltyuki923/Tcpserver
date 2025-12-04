@@ -16,15 +16,15 @@ int main(int argc, char*argv[]){
 
     //启动触发模式
     server.trig_mode();
-    //启动日志写
+    //启动日志写，log_write是单例模式，不用分配内存
     server.log_write();
-    //启动数据库连接池
+    //启动数据库连接池，sql_pool是单例模式，不用分配内存
     server.sql_pool();
-    //启动线程池
+    //启动线程池,thread_pool需要分配内存
     server.thread_pool();
-    //启动监听
+    //创建listenfd，启动监听,
     server.eventListen();
-    //启动事件循环
+    //启动事件循环,循环中调用epoll_wait
     server.eventLoop();
 
     return 0;
